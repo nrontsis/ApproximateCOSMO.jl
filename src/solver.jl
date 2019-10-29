@@ -23,7 +23,7 @@ function admm_step!(x::Vector{Float64},
 	# x_tl and ν are automatically updated, since they are views on sol
 	@. ls[1:n] = σ * x - q
 	@. ls[(n + 1):end] = b - s + μ / ρ
-	solve!(kkt_solver,sol,ls)
+	s_time = @elapsed solve!(kkt_solver,sol,ls)
 
 	# Over relaxattion
 	@. x = α * x_tl + (1.0 - α) * x
@@ -36,7 +36,7 @@ function admm_step!(x::Vector{Float64},
 
 	# update dual variable μ
 	@. μ = μ + ρ .* (s_tl - s)
-	return p_time
+	return p_time, s_time
 end
 
 # SOLVER ROUTINE
@@ -96,13 +96,15 @@ function optimize!(ws::COSMO.Workspace)
 		@. δx = ws.vars.x
 		@. δy = ws.vars.μ
 
-		ws.times.proj_time += admm_step!(
+		proj_time, sol_time = admm_step!(
 			ws.vars.x, ws.vars.s, ws.vars.μ, ν,
 			x_tl, s_tl, ls, sol,
 			ws.kkt_solver, ws.p.q, ws.p.b, ws.ρvec,
 			settings.alpha, settings.sigma,
 			m, n, ws.p.C);
 
+		ws.times.proj_time += proj_time
+		ws.times.sol_time += sol_time
 		# compute deltas for infeasibility detection
 		@. δx = ws.vars.x - δx
 
@@ -125,7 +127,7 @@ function optimize!(ws::COSMO.Workspace)
 			end
 
 			# print iteration steps
-			settings.verbose && print_iteration(ws, iter, cost, r_prim, r_dual)
+			settings.verbose && print_iteration(ws, iter, cost, r_prim, r_dual, time() - solver_time_start)
 
 			if has_converged(ws, r_prim, r_dual)
 				status = :Solved
