@@ -12,7 +12,12 @@ function print_header(ws::COSMO.Workspace)
 	println("Problem:  x ∈ R^{$(n)},\n          constraints: A ∈ R^{$(m)x$(n)} ($(count(!iszero, ws.p.A)) nnz),\n          matrix size to factor: $(n + m)x$(n + m) ($(nnz_in_M) nnz)")
 	for (iii, set) in enumerate(sort(ws.p.C.sets, by = x -> -x.dim))
 		set_name = split(string(typeof(set).name), ".")[end]
-		iii == 1 ? println("Sets:"*" "^5*"$(set_name) of dim: $(set.dim)") : println(" "^10*"$(set_name) of dim: $(set.dim)")
+		if isa(set, PsdCone) || isa(set, PsdConeTriangle)
+			set_dim = string(set.sqrt_dim, "x", set.sqrt_dim)
+		else
+			set_dim = string(set.dim)
+		end
+		iii == 1 ? println("Sets:"*" "^5*"$(set_name) of dim: $(set.dim)") : println(" "^10*"$(set_name) of dim: $(set_dim)")
 		if iii > 5
 			println(" "^10*"... and $(length(ws.p.C.sets)-5) more")
 			break
