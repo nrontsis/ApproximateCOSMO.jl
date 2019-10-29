@@ -61,9 +61,19 @@ function optimize!(ws::COSMO.Workspace)
 	ws.sm = (settings.scaling > 0) ? ScaleMatrices(ws.p.model_size[1], ws.p.model_size[2]) : ScaleMatrices()
 
 	# perform preprocessing steps (scaling, initial KKT factorization)
-	ws.times.factor_time = 0
-	ws.times.setup_time = @elapsed setup!(ws);
-	ws.times.proj_time  = 0. #reset projection time
+	if isnothing(ws.kkt_solver)
+		ws.sm = (settings.scaling > 0) ? ScaleMatrices(ws.p.model_size[1], ws.p.model_size[2]) : ScaleMatrices()
+		# perform preprocessing steps (scaling, initial KKT factorization)
+		ws.times.factor_time = 0
+		ws.times.setup_time = @elapsed setup!(ws);
+		ws.times.proj_time  = 0. #reset projection time
+		ws.times.sol_time  = 0. #reset linear solve time
+	else
+		ws.times.setup_time = 0.
+		ws.times.factor_time = 0
+		ws.times.proj_time  = 0. #reset projection time
+		ws.times.sol_time  = 0. #reset linear solve time
+	end
 
 	# instantiate variables
 	num_iter = 0
@@ -192,7 +202,6 @@ function optimize!(ws::COSMO.Workspace)
 	res_info = ResultInfo(r_prim, r_dual)
 
 	y = -ws.vars.μ
-	free_memory!(ws)
 
 	return Result{Float64}(ws.vars.x, y, ws.vars.s.data, cost, num_iter, status, res_info, ws.times);
 
