@@ -53,6 +53,7 @@ mutable struct Settings
 	max_iter::Int64
 	verbose::Bool
 	kkt_solver::Union{Type{<: AbstractKKTSolver}, OptionsFactory{<: AbstractKKTSolver}}
+	psd_projector::Union{Type{<: AbstractConvexSet}, OptionsFactory{<: AbstractConvexSet}}
 	check_termination::Int64
 	check_infeasibility::Int64
 	scaling::Int64
@@ -82,6 +83,7 @@ mutable struct Settings
 		max_iter=2500,
 		verbose=false,
 		kkt_solver=QdldlKKTSolver,
+		psd_projector=PsdConeTriangle,
 		check_termination=40,
 		check_infeasibility=40,
 		scaling=10,
@@ -103,6 +105,6 @@ mutable struct Settings
 	if !isa(kkt_solver, OptionsFactory)
 		kkt_solver = with_options(kkt_solver)
 	end
-	new(rho, sigma, alpha, eps_abs, eps_rel, eps_prim_inf, eps_dual_inf, max_iter, verbose, kkt_solver, check_termination, check_infeasibility, scaling, MIN_SCALING, MAX_SCALING, adaptive_rho, adaptive_rho_interval, adaptive_rho_tolerance, verbose_timing, RHO_MIN, RHO_MAX, RHO_TOL, decompose, complete_dual, time_limit, obj_true, obj_true_tol)
+	new(rho, sigma, alpha, eps_abs, eps_rel, eps_prim_inf, eps_dual_inf, max_iter, verbose, kkt_solver, psd_projector, check_termination, check_infeasibility, scaling, MIN_SCALING, MAX_SCALING, adaptive_rho, adaptive_rho_interval, adaptive_rho_tolerance, verbose_timing, RHO_MIN, RHO_MAX, RHO_TOL, decompose, complete_dual, time_limit, obj_true, obj_true_tol)
 end
 end

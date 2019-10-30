@@ -1,5 +1,7 @@
 using UnsafeArrays
 import Base: showarg, eltype
+include("../../LOBPCG.jl/lobpcg.jl")
+include("./lobpcg_projection.jl")
 const DSYEVR_ = (BLAS.@blasfunc(dsyevr_),Base.liblapack_name)
 const SSYEVR_ = (BLAS.@blasfunc(ssyevr_),Base.liblapack_name)
 
@@ -351,20 +353,20 @@ function project!(x::AbstractArray, cone::Union{PsdConeTriangle{T}, DensePsdCone
 end
 
 # Notice that we are using a (faster) in-place version that modifies the input
-function in_dual!(x::AbstractVector{T}, cone::Union{PsdConeTriangle{T}, DensePsdConeTriangle{T}}, tol::T) where{T}
+function in_dual!(x::AbstractVector{T}, cone::Union{PsdConeTriangle{T}, DensePsdConeTriangle{T}, PsdConeTriangleLOBPCG{T}}, tol::T) where{T}
     n = cone.sqrt_dim
     populate_upper_triangle!(cone.X, x, 1 / sqrt(2))
     return COSMO.is_pos_def!(cone.X, tol)
 end
-in_dual(x::AbstractVector{T}, cone::Union{PsdConeTriangle{T}, DensePsdConeTriangle{T}}, tol::T) where {T} = in_dual!(x, cone, tol)
+in_dual(x::AbstractVector{T}, cone::Union{PsdConeTriangle{T}, DensePsdConeTriangle{T}, PsdConeTriangleLOBPCG{T}}, tol::T) where {T} = in_dual!(x, cone, tol)
 
-function in_pol_recc!(x::AbstractVector{T}, cone::Union{PsdConeTriangle{T}, DensePsdConeTriangle{T}}, tol::T) where{T}
+function in_pol_recc!(x::AbstractVector{T}, cone::Union{PsdConeTriangle{T}, DensePsdConeTriangle{T}, PsdConeTriangleLOBPCG{T}}, tol::T) where{T}
     n = cone.sqrt_dim
     populate_upper_triangle!(cone.X, x, 1 / sqrt(2))
     Xs = Symmetric(cone.X)
     return COSMO.is_neg_def!(cone.X, tol)
 end
-in_pol_recc(x::AbstractVector{T}, cone::Union{PsdConeTriangle{T}, DensePsdConeTriangle{T}}, tol::T) where {T} = in_pol_recc!(x, cone, tol)
+in_pol_recc(x::AbstractVector{T}, cone::Union{PsdConeTriangle{T}, DensePsdConeTriangle{T}, PsdConeTriangleLOBPCG{T}}, tol::T) where {T} = in_pol_recc!(x, cone, tol)
 
 
 function allocate_memory!(cone::Union{PsdConeTriangle{T}, DensePsdConeTriangle{T}}) where {T}
@@ -812,7 +814,7 @@ function scale!(cone::AbstractConvexCone{T}, ::AbstractVector{T}) where{T}
   return nothing
 end
 
-function rectify_scaling!(E, work, set::Union{SecondOrderCone{T}, PsdCone{T}, DensePsdCone{T}, PsdConeTriangle{T}, DensePsdConeTriangle{T}, PowerCone{T}, DualPowerCone{T}, ExponentialCone{T}, DualExponentialCone{T}}) where{T}
+function rectify_scaling!(E, work, set::Union{SecondOrderCone{T}, PsdCone{T}, DensePsdCone{T}, PsdConeTriangle{T}, PsdConeTriangleLOBPCG{T}, DensePsdConeTriangle{T}, PowerCone{T}, DualPowerCone{T}, ExponentialCone{T}, DualExponentialCone{T}}) where{T}
   return rectify_scalar_scaling!(E, work)
 end
 rectify_scaling!(E, work, set::Union{ZeroSet{<:Real}, Nonnegatives{<:Real}, Box{<:Real}}) = false
