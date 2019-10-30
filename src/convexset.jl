@@ -371,36 +371,6 @@ function allocate_memory!(cone::Union{PsdConeTriangle{T}, DensePsdConeTriangle{T
   cone.X = zeros(cone.sqrt_dim, cone.sqrt_dim)
 end
 
-function populate_upper_triangle!(A::AbstractMatrix, x::AbstractVector, scaling_factor::Float64)
- 	k = 0
-  	for j in 1:size(A, 2)
-     	for i in 1:j
-        	k += 1
-        	if i != j
-        		A[i, j] = scaling_factor * x[k]
-        	else
-        		A[i, j] = x[k]
-        	end
-      	end
-  	end
-  	nothing
-end
-
-function extract_upper_triangle!(A::AbstractMatrix, x::AbstractVector, scaling_factor::Float64)
-	k = 0
-  	for j in 1:size(A, 2)
-     	for i in 1:j
-        	k += 1
-        	if i != j
-        		x[k] = scaling_factor * A[i, j]
-        	else
-        		x[k] = A[i, j]
-        	end
-      	end
-  	end
-	nothing
-end
-
 """
     ExponentialCone(MAX_ITERS = 100, EXP_TOL = 1e-8)
 
