@@ -17,7 +17,7 @@ function print_header(ws::COSMO.Workspace)
 		else
 			set_dim = string(set.dim)
 		end
-		iii == 1 ? println("Sets:"*" "^5*"$(set_name) of dim: $(set.dim)") : println(" "^10*"$(set_name) of dim: $(set_dim)")
+		iii == 1 ? println("Sets:"*" "^5*"$(set_name) of dim: $(set_dim)") : println(" "^10*"$(set_name) of dim: $(set_dim)")
 		if iii > 5
 			println(" "^10*"... and $(length(ws.p.C.sets)-5) more")
 			break
