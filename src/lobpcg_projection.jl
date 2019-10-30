@@ -83,7 +83,6 @@ function project!(x::AbstractArray, cone::PsdConeTriangleLOBPCG{T}) where {T}
         end
         cone.lobpcg.tol = get_tolerance(cone)
         cone.lobpcg, status = lobpcg!(cone.lobpcg, cone.max_iter)
-        @assert status == :converged
         cone.lobpcg_iterations += cone.lobpcg.iteration - 1
     else
         status = :not_called
