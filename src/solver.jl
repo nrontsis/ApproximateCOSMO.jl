@@ -76,7 +76,7 @@ function optimize!(ws::COSMO.Workspace)
 	end
 
 	# instantiate variables
-	num_iter = 0
+	ws.iterations = 0
 	status = :Unsolved
 	cost = Inf
 	r_prim = Inf
@@ -101,7 +101,7 @@ function optimize!(ws::COSMO.Workspace)
 
 	for iter = 1:settings.max_iter
 
-		num_iter+= 1
+		ws.iterations += 1
 
 		@. δx = ws.vars.x
 		@. δy = ws.vars.μ
@@ -176,7 +176,7 @@ function optimize!(ws::COSMO.Workspace)
 	settings.verbose_timing && (ws.times.post_time = time())
 
 	# calculate primal and dual residuals
-	if num_iter == settings.max_iter
+	if ws.iterations == settings.max_iter
 		r_prim, r_dual = calculate_residuals!(ws)
 		status = :Max_iter_reached
 	end
@@ -196,14 +196,14 @@ function optimize!(ws::COSMO.Workspace)
 	ws.times.solver_time = time() - solver_time_start
 	settings.verbose_timing && (ws.times.post_time = time() - ws.times.post_time)
 	# print solution to screen
-	settings.verbose && print_result(status, num_iter, cost, ws.times.solver_time)
+	settings.verbose && print_result(status, ws.iterations, cost, ws.times.solver_time)
 
 	# create result object
 	res_info = ResultInfo(r_prim, r_dual)
 
 	y = -ws.vars.μ
 
-	return Result{Float64}(ws.vars.x, y, ws.vars.s.data, cost, num_iter, status, res_info, ws.times);
+	return Result{Float64}(ws.vars.x, y, ws.vars.s.data, cost, ws.iterations, status, res_info, ws.times);
 
 end
 

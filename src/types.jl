@@ -276,7 +276,7 @@ mutable struct Workspace{T}
 	flags::Flags
 	Info::Info
 	times::ResultTimes{Float64} #Always 64 bit regardless of data type?
-
+	iterations::Int
 	#constructor
 	function Workspace{T}() where {T}
 		p = ProblemData{T}()
@@ -284,7 +284,7 @@ mutable struct Workspace{T}
 		vars = Variables{T}(1, 1, p.C)
     uvars = UtilityVariables{T}(1, 1)
 		ci = ChordalInfo{T}()
-		return new(p, Settings(), sm, ci, vars,  uvars, zero(T), T[], nothing, Flags(), Info([zero(T)]), ResultTimes())
+		return new(p, Settings(), sm, ci, vars,  uvars, zero(T), T[], nothing, Flags(), Info([zero(T)]), ResultTimes(), 0)
 	end
 end
 Workspace(args...) = Workspace{DefaultFloat}(args...)
