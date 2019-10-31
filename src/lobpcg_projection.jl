@@ -82,8 +82,17 @@ function project!(x::AbstractArray, cone::PsdConeTriangleLOBPCG{T}) where {T}
             cone.lobpcg.which = :smallest
         end
         cone.lobpcg.tol = get_tolerance(cone)
-        cone.lobpcg, status = lobpcg!(cone.lobpcg, cone.max_iter)
-        cone.lobpcg_iterations += cone.lobpcg.iteration - 1
+        try
+            cone.lobpcg, status = lobpcg!(cone.lobpcg, cone.max_iter)
+            cone.lobpcg_iterations += cone.lobpcg.iteration - 1
+        catch e
+            if isa(e, PosDefException)
+                status = :error
+                @warn "LOBPCG failed; switching to exact eigendecompositon."
+            else
+                throw(e)
+            end
+        end
     else
         status = :not_called
     end
