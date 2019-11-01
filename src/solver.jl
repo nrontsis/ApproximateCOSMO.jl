@@ -74,6 +74,7 @@ function optimize!(ws::COSMO.Workspace)
 		ws.times.proj_time  = 0. #reset projection time
 		ws.times.sol_time  = 0. #reset linear solve time
 	end
+	reset_iteration_counters!(ws)
 
 	# instantiate variables
 	ws.iterations = 0
@@ -210,4 +211,11 @@ end
 
 function free_memory!(ws)
 	free_memory!(ws.kkt_solver)
+end
+
+function reset_iteration_counters!(ws)
+	reset_iteration_counters!(ws.kkt_solver)
+	for set in ws.p.C.sets
+		reset_iteration_counters!(set)
+	end
 end

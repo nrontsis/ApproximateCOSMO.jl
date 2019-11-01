@@ -142,3 +142,4 @@ function update_rho!(s::CholmodKKTSolver, rho)
 end
 
 free_memory!(s::AbstractKKTSolver) = nothing
+reset_iteration_counters!(s::AbstractKKTSolver) = nothing

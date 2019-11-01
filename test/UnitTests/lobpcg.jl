@@ -38,7 +38,6 @@ function lobpcg_unit_tests(X::Matrix)
         @test cone.exact_projections == 1
         @test cone.lobpcg_iterations == 1
     end
-
     @testset "Warm starting - a few iterations required" begin
         cone.iteration = 10^8
         lobpcg_unit_test!(cone, X + 1e-6*Symmetric(randn(rng, n, n)))

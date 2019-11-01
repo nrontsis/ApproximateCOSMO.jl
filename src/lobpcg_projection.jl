@@ -75,12 +75,8 @@ function project!(x::AbstractArray, cone::PsdConeTriangleLOBPCG{T}) where {T}
 
     if size(cone.U, 2) < cone.lobpcg.max_dim && cone.iteration > 1
         populate_upper_triangle!(cone.X, x)
-        initialize!(cone.lobpcg, Symmetric(cone.X), cone.U)
-        if cone.is_subspace_positive
-            cone.lobpcg.which = :largest
-        else
-            cone.lobpcg.which = :smallest
-        end
+        initialize!(cone.lobpcg, Symmetric(cone.X), cone.U, is_orthonormal=true,
+            which = cone.is_subspace_positive ? :largest : :smallest)
         cone.lobpcg.tol = get_tolerance(cone)
         try
             cone.lobpcg, status = lobpcg!(cone.lobpcg, cone.max_iter)
@@ -108,7 +104,7 @@ function project!(x::AbstractArray, cone::PsdConeTriangleLOBPCG{T}) where {T}
     end
 end
 
-function reset!(cone::PsdConeTriangleLOBPCG)
+function reset_iteration_counters!(cone::PsdConeTriangleLOBPCG)
     cone.exact_projections = 0
     cone.lobpcg_iterations = 0
     cone.iteration = 0

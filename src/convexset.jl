@@ -373,6 +373,10 @@ function allocate_memory!(cone::Union{PsdConeTriangle{T}, DensePsdConeTriangle{T
   cone.X = zeros(cone.sqrt_dim, cone.sqrt_dim)
 end
 
+function reset_iteration_counters!(cone::AbstractConvexSet)
+  nothing
+end
+
 """
     ExponentialCone(MAX_ITERS = 100, EXP_TOL = 1e-8)
 
