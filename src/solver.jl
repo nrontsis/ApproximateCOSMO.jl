@@ -73,8 +73,9 @@ function optimize!(ws::COSMO.Workspace)
 		ws.times.factor_time = 0
 		ws.times.proj_time  = 0. #reset projection time
 		ws.times.sol_time  = 0. #reset linear solve time
+		reset_iteration_counters!(ws) # this sets lobpcg's iteration = 1, i.e. it is
+		# only suitable for warm starting
 	end
-	reset_iteration_counters!(ws)
 
 	# instantiate variables
 	ws.iterations = 0

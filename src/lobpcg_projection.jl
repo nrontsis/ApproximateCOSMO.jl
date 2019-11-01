@@ -107,7 +107,7 @@ end
 function reset_iteration_counters!(cone::PsdConeTriangleLOBPCG)
     cone.exact_projections = 0
     cone.lobpcg_iterations = 0
-    cone.iteration = 0
+    cone.iteration = 1
 end
 
 allocate_memory!(cone::PsdConeTriangleLOBPCG) = nothing
