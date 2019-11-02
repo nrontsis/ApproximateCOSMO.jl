@@ -15,6 +15,7 @@ include("./kktsolver.jl")
 if in("Pardiso",keys(Pkg.installed()))
     include("./kktsolver_pardiso.jl")
 end
+include("./kktsolver_bo.jl")
 
 include("./algebra.jl")
 include("./projections.jl")
