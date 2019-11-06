@@ -73,7 +73,7 @@ function project!(x::AbstractArray, cone::PsdConeTriangleLOBPCG{T}) where {T}
     sqrt_dim = cone.sqrt_dim
     cone.iteration += 1
 
-    if size(cone.U, 2) < cone.lobpcg.max_dim && cone.iteration > 1
+    if size(cone.U, 2) <= cone.lobpcg.max_dim && cone.iteration > 1
         populate_upper_triangle!(cone.X, x)
         initialize!(cone.lobpcg, Symmetric(cone.X), cone.U, is_orthonormal=true,
             which = cone.is_subspace_positive ? :largest : :smallest)
